@@ -1,0 +1,14 @@
+{
+    "applications": {
+        "Party Cookie": {
+            "applicationId": "ywQHYRUuJfyB8yIzY6G3hP1rMS98QWzoCUgasoki", 
+            "masterKey": "JWWJEHYLOXM0qXFuBJemjTfbToJs6NjGbXzUQ4dj"
+        }, 
+        "_default": {
+            "link": "Party Cookie"
+        }
+    }, 
+    "global": {
+        "parseVersion": "1.2.19"
+    }
+}

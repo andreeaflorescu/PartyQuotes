@@ -14,12 +14,11 @@
         android:layout_height="wrap_content"
         android:text="@string/hello_world" />
     
-    <Button 
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:id="@+id/imgQuote"
+        android:layout_width="50sp"
+        android:layout_height="50sp"
         android:layout_below="@id/tvQuote"
-        android:drawableLeft="@drawable/facebook"
-        android:text="MA+TA"
         />
 
 </RelativeLayout>
