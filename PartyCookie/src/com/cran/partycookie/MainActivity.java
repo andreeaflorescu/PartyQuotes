@@ -16,6 +16,7 @@ import android.provider.MediaStore.Images.ImageColumns;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.Menu;
 import android.widget.ImageView;
@@ -27,6 +28,38 @@ public class MainActivity extends Activity {
 	private TextView tvQuote;
 	private ImageView imgQuote;
 	
+	public void loadQuote(String key) {
+		ParseQuery<ParseObject> query = ParseQuery.getQuery("Quote");
+		query.getInBackground(key, new GetCallback<ParseObject>() {
+		  public void done(ParseObject quote, ParseException e) {
+		    if (e == null) {
+		      // object will be your game score
+		    	if (quote != null) {
+		    		tvQuote.setText(quote.getString("text"));
+		    		ParseFile objectFile = quote.getParseFile("image");
+		    		if (objectFile == null) {
+		    			Log.e("QUOTE", "ERROR pbasdafasf fsakjfdksfn");
+		    		}
+		    		objectFile.getDataInBackground(new GetDataCallback(){
+
+						@Override
+						public void done(byte[] data, ParseException e) {
+							if (e == null) {
+								Bitmap bmp = BitmapFactory.decodeByteArray(data,
+										0,data.length);
+								imgQuote.setImageBitmap(bmp);
+							}
+						}
+		    			
+		    		});
+		    	}
+		    } else {
+		      // something went wrong
+		    }
+		  }
+		});
+	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		
@@ -35,43 +68,15 @@ public class MainActivity extends Activity {
 		Parse.initialize(this, applicationId, clientKey);
 		PushService.setDefaultPushCallback(this, MainActivity.class);
 		
-		tvQuote = (TextView) findViewById(R.id.tvQuote);
-		imgQuote = (ImageView) findViewById(R.id.imgQuote);
+//		tvQuote = (TextView) findViewById(R.id.tvQuote);
+//		imgQuote = (ImageView) findViewById(R.id.imgQuote);
 		
-		ObjectRetriever objRetriever = new ObjectRetriever("GW152ysCQ2");
-		Quote quote = objRetriever.load();
-		tvQuote.setText(quote.getText());
-		imgQuote.setImageBitmap(quote.getImage());
+//		ObjectRetriever objRetriever = new ObjectRetriever("GW152ysCQ2");
+//		Quote quote = objRetriever.load();
+//		tvQuote.setText(quote.getText());
+//		imgQuote.setImageBitmap(quote.getImage());
 		
-//		ParseQuery<ParseObject> query = ParseQuery.getQuery("Quote");
-//		query.getInBackground("GW152ysCQ2", new GetCallback<ParseObject>() {
-//		  public void done(ParseObject quote, ParseException e) {
-//		    if (e == null) {
-//		      // object will be your game score
-//		    	if (quote != null) {
-//		    		tvQuote.setText(quote.getString("text"));
-//		    		ParseFile objectFile = quote.getParseFile("image");
-//		    		if (objectFile == null) {
-//		    			Log.e("QUOTE", "ERROR pbasdafasf fsakjfdksfn");
-//		    		}
-//		    		objectFile.getDataInBackground(new GetDataCallback(){
-//
-//						@Override
-//						public void done(byte[] data, ParseException e) {
-//							if (e == null) {
-//								Bitmap bmp = BitmapFactory.decodeByteArray(data,
-//										0,data.length);
-//								imgQuote.setImageBitmap(bmp);
-//							}
-//						}
-//		    			
-//		    		});
-//		    	}
-//		    } else {
-//		      // something went wrong
-//		    }
-//		  }
-//		});
+//		loadQuote("GW152ysCQ2");
 	}
 
 	@Override
