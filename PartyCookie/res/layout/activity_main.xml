@@ -55,14 +55,16 @@
         android:orientation="horizontal"
         android:weightSum="2"
         android:gravity="center">
-        <Button 
+        <Button
+            android:id="@+id/fbSareButton" 
             android:text="Facebook"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"/>
     		
         <Button
-             android:text="Twitter"
+            android:id="@+id/twShareButton"
+            android:text="Twitter"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"/>
