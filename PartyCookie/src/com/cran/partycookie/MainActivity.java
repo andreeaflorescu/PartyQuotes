@@ -27,6 +27,7 @@ public class MainActivity extends Activity {
 	private String clientKey = new String("GmsXizv3jyLV4ks4RBMIQ8N9nM9X825Da8YAEvuI");
 	private TextView tvQuote;
 	private ImageView imgQuote;
+	private TextView tvAuthor;
 	
 	public void loadQuote(String key) {
 		ParseQuery<ParseObject> query = ParseQuery.getQuery("Quote");
@@ -60,6 +61,19 @@ public class MainActivity extends Activity {
 		});
 	}
 	
+	public void setQuoteText(String text) {
+		tvQuote.setText(text);
+	}
+	
+	public void setQuoteAuthor(String author) {
+		tvAuthor.setText(author);
+	}
+	
+	public void setQuoteImage(Bitmap image) {
+		imgQuote.setImageBitmap(image);
+	}
+	
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		
@@ -67,8 +81,9 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		Parse.initialize(this, applicationId, clientKey);
 		PushService.setDefaultPushCallback(this, MainActivity.class);
-		
-//		tvQuote = (TextView) findViewById(R.id.tvQuote);
+
+		tvQuote = (TextView) findViewById(R.id.tvQuote);
+		tvAuthor = (TextView) findViewById(R.id.tvAuthor);
 //		imgQuote = (ImageView) findViewById(R.id.imgQuote);
 		
 //		ObjectRetriever objRetriever = new ObjectRetriever("GW152ysCQ2");
@@ -77,6 +92,9 @@ public class MainActivity extends Activity {
 //		imgQuote.setImageBitmap(quote.getImage());
 		
 //		loadQuote("GW152ysCQ2");
+		
+		RandomQuote randomQ = new RandomQuote();
+		randomQ.getRandomKey();
 	}
 
 	@Override
