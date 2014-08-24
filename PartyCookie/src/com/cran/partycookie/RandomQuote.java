@@ -1,11 +1,13 @@
 package com.cran.partycookie;
 
+import java.util.List;
 import java.util.Random;
 
 import android.util.Log;
 import android.widget.Toast;
 
 import com.parse.CountCallback;
+import com.parse.FindCallback;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
@@ -48,8 +50,19 @@ public class RandomQuote {
 					
 					ParseQuery<ParseObject> objectQuery = ParseQuery.getQuery("Quote");
 					objectQuery.whereEqualTo("index", index);
-					ObjectRetriever objectRetriever = new ObjectRetriever(objectQuery, activity);
-					objectRetriever.load();
+					objectQuery.findInBackground(new FindCallback<ParseObject>() {
+					    public void done(List<ParseObject> queryList, com.parse.ParseException e) {
+					        if (e == null) {
+					            Log.v("PartyCookie", "Retrieved " + queryList.size() + " quote");
+					            ObjectRetriever objectRetriever = new ObjectRetriever(queryList.get(0), activity);
+					            objectRetriever.load();
+					            
+					        } else {
+					            Log.v("PartyCookie", "Error: " + e.getMessage());
+					        }
+					    }
+
+					});
 				
 				} else {
 					Log.v("PartyCookie", "error in getRandomKey()");

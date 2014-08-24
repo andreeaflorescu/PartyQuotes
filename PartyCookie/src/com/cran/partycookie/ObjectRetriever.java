@@ -13,13 +13,11 @@ import com.parse.ParseQuery;
 
 public class ObjectRetriever {
 
-	private String key;
 	private MainActivity activity;
-	private ParseQuery<ParseObject> query;
+	private ParseObject query;
 
-	public ObjectRetriever(ParseQuery<ParseObject> query, MainActivity activity) {
+	public ObjectRetriever(ParseObject query, MainActivity activity) {
 		this.query = query;
-		this.key = key;
 		this.activity = activity;
 	}
 	
@@ -27,47 +25,38 @@ public class ObjectRetriever {
 	private String text;
 	private String author;
 	
-	Quote quoteObject = new Quote();
-	
-	public Quote load() {
-
-		query.getInBackground("GW152ysCQ2", new GetCallback<ParseObject>() {
-		  public void done(ParseObject quote, ParseException e) {
-		    if (e == null) {
-		    	// ========== get text
-		    	text = quote.getString("text");
-		    	activity.setQuoteText(text);
-		    	// ========== get author
-		    	author = quote.getString("author");
-		    	activity.setQuoteAuthor(author);
-		    	
-		    	// ========== get image
-	    		ParseFile objectFile = quote.getParseFile("image");
-	    		if (objectFile == null) {
-	    			Log.e("QUOTE", "ERROR pbasdafasf fsakjfdksfn");
-	    		}
-	    		
-	    		objectFile.getDataInBackground(new GetDataCallback(){
-
-					@Override
-					public void done(byte[] data, ParseException e) {
-						if (e == null) {
-							
-							bmp = BitmapFactory.decodeByteArray(data,
-									0,data.length);
-							if (bmp != null) {
-								activity.setQuoteImage(bmp);
-								Log.v("PartyCookie", "ERROR: Image is null!");
-							}
-						}
-					}
-	    			
-	    		});
-	    	}
-		  }
-		});
+	public void load() {
+    	
+		// ========== get text
+    	text = query.getString("text");
+    	activity.setQuoteText(text);
+    	
+    	// ========== get author
+    	author = query.getString("author");
+    	activity.setQuoteAuthor(author);
+    	
+    	// ========== get image
+		ParseFile objectFile = query.getParseFile("image");
+		if (objectFile == null) {
+			Log.e("QUOTE", "ERROR pbasdafasf fsakjfdksfn");
+		}
 		
-		return quoteObject;
+		objectFile.getDataInBackground(new GetDataCallback(){
+
+			@Override
+			public void done(byte[] data, ParseException e) {
+				if (e == null) {
+					
+					bmp = BitmapFactory.decodeByteArray(data,
+							0,data.length);
+					if (bmp != null) {
+						activity.setQuoteImage(bmp);
+						Log.v("PartyCookie", "ERROR: Image is null!");
+					}
+				}
+			}
+			
+		});		
 	}
 	
 }
