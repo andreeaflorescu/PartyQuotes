@@ -56,20 +56,22 @@
             android:id="@+id/fbSareButton"
             android:text="@string/share"
             android:textColor="#ffffff"
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/fbshare"
             android:layout_marginBottom="10dp" 
-            android:gravity="center"/>
+            android:gravity="center"
+            android:layout_gravity="center_horizontal"/>
 
         <Button
             android:id="@+id/twShareButton"
             android:text="@string/tweet"
             android:textColor="#ffffff"
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/twshare"
-            android:gravity="center" />
+            android:gravity="center" 
+            android:layout_gravity="center_horizontal"/>
 
     </LinearLayout>
 </LinearLayout>

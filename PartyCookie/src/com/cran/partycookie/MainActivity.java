@@ -1,11 +1,17 @@
 package com.cran.partycookie;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.List;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -13,11 +19,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.facebook.FacebookException;
+import com.facebook.FacebookOperationCanceledException;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.widget.FacebookDialog;
+import com.facebook.widget.WebDialog;
+import com.facebook.widget.WebDialog.OnCompleteListener;
 import com.parse.Parse;
 
 
@@ -29,6 +40,9 @@ public class MainActivity extends Activity implements View.OnClickListener{
 	private static String SHARED_QUOTE_TEXT = new String("textquote");
 	private static String SHARED_QUOTE_AUTHOR = new String("authorquote");
 	private static String SHARED_PREFS_FILE = new String("QuotePrefs");
+	
+	private static String TWITTER_API_KEY = new String("uXjzbetN5sG5oKgoZTQXTBHqj");
+	private static String TWITTER_SECRET_KEY = new String("uXjzbetN5sG5oKgoZTQXTBHqj");
 	
 	SharedPreferences sharedPref;
 	private Storage storage;
@@ -139,8 +153,10 @@ public class MainActivity extends Activity implements View.OnClickListener{
         uiHelper.onCreate(savedInstanceState);
         
         Button fbShareButton = (Button)findViewById(R.id.fbSareButton);
+        Button twShareButton = (Button)findViewById(R.id.twShareButton);
+        
         fbShareButton.setOnClickListener(this);
-			
+		twShareButton.setOnClickListener(this);	
 	}
 	
 	@Override
@@ -154,19 +170,83 @@ public class MainActivity extends Activity implements View.OnClickListener{
 	public void onClick(View v) {
 		
 		if(v.getId() == R.id.fbSareButton){
-			Log.d("CACAT", "share");
+			
 			if (FacebookDialog.canPresentShareDialog(getApplicationContext(), FacebookDialog.ShareDialogFeature.SHARE_DIALOG)) {
                 FacebookDialog shareDialog = new FacebookDialog.ShareDialogBuilder(this)
                         .setLink("https://developers.facebook.com/android")
                         .setApplicationName("Party Cookie")
-                        .setName("lalalalalulu sdasd asdsfdsf sdfsdf sdfssdf sfsdf sdfsdf")
-                        .setCaption("hihihi")
+                        .setName(tvQuote.getText().toString())
+                        .setCaption(tvAuthor.getText().toString())
                         .setDescription(" ")
                         .build();
                 uiHelper.trackPendingDialogCall(shareDialog.present());
                 
             }
+			else{
+				//publishFeedDialog();
+			}
 		}
+		
+		if(v.getId() == R.id.twShareButton){
+			
+			String tweetUrl = 
+			    String.format("https://twitter.com/intent/tweet?text=%s&url=%s",
+			        urlEncode(tvQuote.getText().toString() + " - " + tvAuthor.getText().toString()), 
+			        urlEncode("https://www.google.ro/"));
+			Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(tweetUrl));
+
+			List<ResolveInfo> matches = getPackageManager().queryIntentActivities(intent, 0);
+			for (ResolveInfo info : matches) {
+			    if (info.activityInfo.packageName.toLowerCase().startsWith("com.twitter")) {
+			        intent.setPackage(info.activityInfo.packageName);
+			    }
+			}
+
+			startActivity(intent);
+			
+		}
+	}
+	
+	private void publishFeedDialog() {
+		
+	    Bundle params = new Bundle();
+	    params.putString("name", "Facebook SDK for Android");
+	    params.putString("caption", "Build great social apps and get more installs.");
+	    params.putString("description", "The Facebook SDK for Android makes it easier and faster to develop Facebook integrated Android apps.");
+	    params.putString("link", "https://developers.facebook.com/android");
+
+	    WebDialog feedDialog = new WebDialog.FeedDialogBuilder(this, Session.getActiveSession(), params)
+        .setOnCompleteListener(new OnCompleteListener() {
+           
+			@Override
+			public void onComplete(Bundle values, FacebookException error) {
+				
+				if(error==null){
+					
+                    final String postId=values.getString("post_id");
+                    if(postId!=null)
+                        Toast.makeText(getApplicationContext(), "Posted Successfully", Toast.LENGTH_SHORT).show();
+                    else
+                        Toast.makeText(getApplicationContext(), "Post canceled", Toast.LENGTH_SHORT).show();
+                }
+                else
+                    if(error instanceof FacebookOperationCanceledException)
+                        Toast.makeText(getApplicationContext(), "Publish canceled",Toast.LENGTH_SHORT).show();
+                    else
+                        Toast.makeText(getApplicationContext(), "connection error", Toast.LENGTH_SHORT).show();
+			}
+        }).build();
+        feedDialog.show();
+	    
+	}
+	
+	public static String urlEncode(String s) {
+	    try {
+	        return URLEncoder.encode(s, "UTF-8");
+	    }
+	    catch (UnsupportedEncodingException e) {
+	        throw new RuntimeException("URLEncoder.encode() failed for " + s);
+	    }
 	}
 	
 	@Override
