@@ -43,7 +43,6 @@ public class RandomQuote {
 			@Override
 			public void done(int count, com.parse.ParseException e) {
 				if (e == null) {
-					System.out.println(count);
 					Log.v("PartyCookie", count + "");
 					String index = randInt(1, count) + "";
 					Log.v("PartyCookie", "Random index of object is: " + index);

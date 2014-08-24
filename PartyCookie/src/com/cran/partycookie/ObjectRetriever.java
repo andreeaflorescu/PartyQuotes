@@ -15,15 +15,17 @@ public class ObjectRetriever {
 
 	private MainActivity activity;
 	private ParseObject query;
-
-	public ObjectRetriever(ParseObject query, MainActivity activity) {
-		this.query = query;
-		this.activity = activity;
-	}
+	private Storage storage;
 	
 	private Bitmap bmp;
 	private String text;
 	private String author;
+	
+	public ObjectRetriever(ParseObject query, MainActivity activity) {
+		this.query = query;
+		this.activity = activity;
+		this.storage = new Storage(activity.getBaseContext());
+	}
 	
 	public void load() {
     	
@@ -34,6 +36,9 @@ public class ObjectRetriever {
     	// ========== get author
     	author = query.getString("author");
     	activity.setQuoteAuthor(author);
+    	
+    	// save to preferences
+    	activity.savePreferences(text, author);
     	
     	// ========== get image
 		ParseFile objectFile = query.getParseFile("image");
@@ -49,6 +54,7 @@ public class ObjectRetriever {
 					
 					bmp = BitmapFactory.decodeByteArray(data,
 							0,data.length);
+					storage.save(bmp);
 					if (bmp != null) {
 						activity.setQuoteImage(bmp);
 						Log.v("PartyCookie", "ERROR: Image is null!");

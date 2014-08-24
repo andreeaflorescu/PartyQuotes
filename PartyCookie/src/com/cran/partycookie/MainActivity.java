@@ -1,23 +1,16 @@
 package com.cran.partycookie;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.pm.Signature;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -25,19 +18,19 @@ import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.widget.FacebookDialog;
-import com.parse.GetCallback;
-import com.parse.GetDataCallback;
 import com.parse.Parse;
-import com.parse.ParseException;
-import com.parse.ParseFile;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
-import com.parse.PushService;
 
 public class MainActivity extends Activity implements View.OnClickListener{
 	
 	private String applicationId = new String("ywQHYRUuJfyB8yIzY6G3hP1rMS98QWzoCUgasoki");
 	private String clientKey = new String("GmsXizv3jyLV4ks4RBMIQ8N9nM9X825Da8YAEvuI");
+	
+	private static String SHARED_QUOTE_TEXT = new String("textquote");
+	private static String SHARED_QUOTE_AUTHOR = new String("authorquote");
+	private static String SHARED_PREFS_FILE = new String("QuotePrefs");
+	
+	SharedPreferences sharedPref;
+	private Storage storage;
 	
 	private TextView tvQuote;
 	private TextView tvAuthor;
@@ -88,6 +81,16 @@ public class MainActivity extends Activity implements View.OnClickListener{
 		quoteContainer.setBackgroundDrawable(new BitmapDrawable(image));
 	}
 	
+	public void savePreferences(String text, String author) {
+		Log.v("PartyCookie", "Saving preferences!!!!!!!!!!!");
+		Editor editor = sharedPref.edit();
+		editor.clear();
+		editor.putString(SHARED_QUOTE_TEXT, text);
+		editor.putString(SHARED_QUOTE_AUTHOR, author);
+		
+		editor.apply();
+	}
+	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -98,16 +101,38 @@ public class MainActivity extends Activity implements View.OnClickListener{
 		
 		// Initialize Parse
 		Parse.initialize(this, applicationId, clientKey);
-		PushService.setDefaultPushCallback(this, MainActivity.class);
+//		PushService.setDefaultPushCallback(this, MainActivity.class);
 		
 		// Initialize Views
 		tvQuote = (TextView) findViewById(R.id.tvQuote);
 		tvAuthor = (TextView) findViewById(R.id.tvAuthor);
 		quoteContainer = (RelativeLayout) findViewById(R.id.quoteContainer);
+	
+		// get shared prefs
+		sharedPref = getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE);
+		storage = new Storage(getBaseContext());
 		
-		// Get random Quote from Cloud
-		RandomQuote randomQ = new RandomQuote(this);
-		randomQ.getRandomKey();
+		// get last quote
+		String text = sharedPref.getString(SHARED_QUOTE_TEXT, null);
+		String author = sharedPref.getString(SHARED_QUOTE_AUTHOR, null);
+		Bitmap image = storage.load();
+		
+		// it's the first time the user opens the app
+		if (text == null || author == null || image == null) {
+			Log.v("text", "TEXTUL E: " + text);
+			Log.v("author", "TEXTUL E: " + author);
+			if (image == null) Log.v("PartyCookie", "nu mergeeee");
+			Log.v("PartyCookie", "Cineva e null");
+			// Get random Quote from Cloud
+			RandomQuote randomQ = new RandomQuote(this);
+			randomQ.getRandomKey();
+			
+		} else {
+			setQuoteText(text);
+			setQuoteAuthor(author);
+			setQuoteImage(image);
+		}
+
 		
 		uiHelper = new UiLifecycleHelper(this, null);
         uiHelper.onCreate(savedInstanceState);
