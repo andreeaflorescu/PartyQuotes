@@ -1,9 +1,14 @@
 package com.cran.partycookie;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
+import java.util.Calendar;
+
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -53,6 +58,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
 	
 	private UiLifecycleHelper uiHelper;
     private static final String TAG_LOG = "FB_SHARE";
+    
+    private PendingIntent pendingIntent;
     
     private FacebookDialog.Callback dialogCallback = new FacebookDialog.Callback() {
         @Override
@@ -106,6 +113,38 @@ public class MainActivity extends Activity implements View.OnClickListener{
 		editor.apply();
 	}
 	
+	private void pushLocalNotification() {
+		
+	    Calendar calendar = Calendar.getInstance();
+	    calendar.set(Calendar.HOUR_OF_DAY, 22);
+	    calendar.set(Calendar.MINUTE, 06);
+	    calendar.set(Calendar.SECOND, 00);
+	    
+	    Intent myIntent = new Intent(MainActivity.this, MyReceiver.class);
+	    pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, myIntent,0);
+	    AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
+	    alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), 24*60*60*1000, pendingIntent);
+	}
+	
+	private void getLastQuote() {
+		// get last quote
+		String text = sharedPref.getString(SHARED_QUOTE_TEXT, null);
+		String author = sharedPref.getString(SHARED_QUOTE_AUTHOR, null);
+		Bitmap image = storage.load();
+		
+		// it's the first time the user opens the app
+		if (text == null || author == null || image == null) {
+			// Get random Quote from Cloud
+			RandomQuote randomQ = new RandomQuote(this);
+			randomQ.getRandomKey();
+			
+		} else {
+			setQuoteText(text);
+			setQuoteAuthor(author);
+			setQuoteImage(image);
+		}
+	}
+	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -113,10 +152,9 @@ public class MainActivity extends Activity implements View.OnClickListener{
 		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.activity_main);
-		
+		pushLocalNotification();
 		// Initialize Parse
 		Parse.initialize(this, applicationId, clientKey);
-//		PushService.setDefaultPushCallback(this, MainActivity.class);
 		
 		// Initialize Views
 		tvQuote = (TextView) findViewById(R.id.tvQuote);
@@ -127,25 +165,18 @@ public class MainActivity extends Activity implements View.OnClickListener{
 		sharedPref = getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE);
 		storage = new Storage(getBaseContext());
 		
-		// get last quote
-		String text = sharedPref.getString(SHARED_QUOTE_TEXT, null);
-		String author = sharedPref.getString(SHARED_QUOTE_AUTHOR, null);
-		Bitmap image = storage.load();
+		// check if this intent was started by the broadcast receiver
+		Intent intent = getIntent();
+		Boolean newQuote = intent.getBooleanExtra(Constants.newQuote, false);
 		
-		// it's the first time the user opens the app
-		if (text == null || author == null || image == null) {
-			Log.v("text", "TEXTUL E: " + text);
-			Log.v("author", "TEXTUL E: " + author);
-			if (image == null) Log.v("PartyCookie", "nu mergeeee");
-			Log.v("PartyCookie", "Cineva e null");
+		if (newQuote) {
 			// Get random Quote from Cloud
+			Log.v("Notification", "new quote on the way!");
 			RandomQuote randomQ = new RandomQuote(this);
 			randomQ.getRandomKey();
-			
 		} else {
-			setQuoteText(text);
-			setQuoteAuthor(author);
-			setQuoteImage(image);
+			Log.v("Notification", "this is an old one!");
+			getLastQuote();
 		}
 
 		
