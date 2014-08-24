@@ -16,7 +16,8 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
-
+	<uses-permission android:name="android.permission.WAKE_LOCK" />
+	
     <permission
         android:name="com.cran.partycookie.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
@@ -42,13 +43,16 @@
             android:value="@string/facebookID"/>
 
         <service android:name="com.parse.PushService" />
-
-        <receiver android:name="com.parse.ParseBroadcastReceiver" >
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.USER_PRESENT" />
-            </intent-filter>
-        </receiver>
+		
+		<activity
+            android:name="com.cran.partycookie.NextActivity"
+            android:label="Next Screen">
+        </activity>
+        
+        <service android:name=".MyAlarmService"
+            	 android:enabled="true" />
+        
+        <receiver android:name=".MyReceiver"/>
         <receiver
             android:name="com.parse.GcmBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND" >
