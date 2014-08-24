@@ -14,9 +14,13 @@ import com.parse.ParseQuery;
 public class ObjectRetriever {
 
 	private String key;
+	private MainActivity activity;
+	private ParseQuery<ParseObject> query;
 
-	public ObjectRetriever(String key) {
+	public ObjectRetriever(ParseQuery<ParseObject> query, MainActivity activity) {
+		this.query = query;
 		this.key = key;
+		this.activity = activity;
 	}
 	
 	private Bitmap bmp;
@@ -27,16 +31,15 @@ public class ObjectRetriever {
 	
 	public Quote load() {
 
-		ParseQuery<ParseObject> query = ParseQuery.getQuery("Quote");
 		query.getInBackground("GW152ysCQ2", new GetCallback<ParseObject>() {
 		  public void done(ParseObject quote, ParseException e) {
 		    if (e == null) {
 		    	// ========== get text
 		    	text = quote.getString("text");
-		    	quoteObject.setText(text);
+		    	activity.setQuoteText(text);
 		    	// ========== get author
 		    	author = quote.getString("author");
-		    	quoteObject.setAuthor(author);
+		    	activity.setQuoteAuthor(author);
 		    	
 		    	// ========== get image
 	    		ParseFile objectFile = quote.getParseFile("image");
@@ -52,8 +55,10 @@ public class ObjectRetriever {
 							
 							bmp = BitmapFactory.decodeByteArray(data,
 									0,data.length);
-							quoteObject.setImage(bmp);
-							
+							if (bmp != null) {
+								activity.setQuoteImage(bmp);
+								Log.v("PartyCookie", "ERROR: Image is null!");
+							}
 						}
 					}
 	    			
