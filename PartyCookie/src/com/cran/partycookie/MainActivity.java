@@ -1,23 +1,13 @@
 package com.cran.partycookie;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.pm.Signature;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -25,13 +15,7 @@ import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.widget.FacebookDialog;
-import com.parse.GetCallback;
-import com.parse.GetDataCallback;
 import com.parse.Parse;
-import com.parse.ParseException;
-import com.parse.ParseFile;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.PushService;
 
 public class MainActivity extends Activity implements View.OnClickListener{
@@ -128,15 +112,17 @@ public class MainActivity extends Activity implements View.OnClickListener{
 	public void onClick(View v) {
 		
 		if(v.getId() == R.id.fbSareButton){
+			Log.d("CACAT", "share");
 			if (FacebookDialog.canPresentShareDialog(getApplicationContext(), FacebookDialog.ShareDialogFeature.SHARE_DIALOG)) {
                 FacebookDialog shareDialog = new FacebookDialog.ShareDialogBuilder(this)
                         .setLink("https://developers.facebook.com/android")
                         .setApplicationName("Party Cookie")
-                        .setDescription("Descriere")
-                        .setName("Name")
+                        .setName("lalalalalulu sdasd asdsfdsf sdfsdf sdfssdf sfsdf sdfsdf")
+                        .setCaption("hihihi")
+                        .setDescription(" ")
                         .build();
                 uiHelper.trackPendingDialogCall(shareDialog.present());
-
+                
             }
 		}
 	}
