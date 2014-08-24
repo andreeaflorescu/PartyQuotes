@@ -2,11 +2,8 @@ package com.cran.partycookie;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-<<<<<<< HEAD
-=======
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
->>>>>>> 44b49e532fc8344fa94260492da35b8de007b5a4
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
@@ -22,10 +19,7 @@ import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.widget.FacebookDialog;
 import com.parse.Parse;
-<<<<<<< HEAD
-import com.parse.PushService;
-=======
->>>>>>> 44b49e532fc8344fa94260492da35b8de007b5a4
+
 
 public class MainActivity extends Activity implements View.OnClickListener{
 	
