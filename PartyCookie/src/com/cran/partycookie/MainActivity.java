@@ -10,6 +10,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
@@ -17,6 +18,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.facebook.Session;
@@ -38,8 +40,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
 	private String clientKey = new String("GmsXizv3jyLV4ks4RBMIQ8N9nM9X825Da8YAEvuI");
 	
 	private TextView tvQuote;
-	private ImageView imgQuote;
 	private TextView tvAuthor;
+	private RelativeLayout quoteContainer;
 	
 	private UiLifecycleHelper uiHelper;
     private static final String TAG_LOG = "FB_SHARE";
@@ -71,38 +73,6 @@ public class MainActivity extends Activity implements View.OnClickListener{
         }
     }
 	
-	public void loadQuote(String key) {
-		ParseQuery<ParseObject> query = ParseQuery.getQuery("Quote");
-		query.getInBackground(key, new GetCallback<ParseObject>() {
-		  public void done(ParseObject quote, ParseException e) {
-		    if (e == null) {
-		      // object will be your game score
-		    	if (quote != null) {
-		    		tvQuote.setText(quote.getString("text"));
-		    		ParseFile objectFile = quote.getParseFile("image");
-		    		if (objectFile == null) {
-		    			Log.e("QUOTE", "ERROR pbasdafasf fsakjfdksfn");
-		    		}
-		    		objectFile.getDataInBackground(new GetDataCallback(){
-
-						@Override
-						public void done(byte[] data, ParseException e) {
-							if (e == null) {
-								Bitmap bmp = BitmapFactory.decodeByteArray(data,
-										0,data.length);
-								imgQuote.setImageBitmap(bmp);
-							}
-						}
-		    			
-		    		});
-		    	}
-		    } else {
-		      // something went wrong
-		    }
-		  }
-		});
-	}
-	
 	public void setQuoteText(String text) {
 		tvQuote.setText(text);
 	}
@@ -112,7 +82,10 @@ public class MainActivity extends Activity implements View.OnClickListener{
 	}
 	
 	public void setQuoteImage(Bitmap image) {
-		imgQuote.setImageBitmap(image);
+		if (image == null) {
+			Log.v("PartyCookie", "Error: setQuoteImage image is NULL!");
+		}
+		quoteContainer.setBackgroundDrawable(new BitmapDrawable(image));
 	}
 	
 	
@@ -122,21 +95,18 @@ public class MainActivity extends Activity implements View.OnClickListener{
 		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.activity_main);
+		
+		// Initialize Parse
 		Parse.initialize(this, applicationId, clientKey);
 		PushService.setDefaultPushCallback(this, MainActivity.class);
-
+		
+		// Initialize Views
 		tvQuote = (TextView) findViewById(R.id.tvQuote);
 		tvAuthor = (TextView) findViewById(R.id.tvAuthor);
-//		imgQuote = (ImageView) findViewById(R.id.imgQuote);
+		quoteContainer = (RelativeLayout) findViewById(R.id.quoteContainer);
 		
-//		ObjectRetriever objRetriever = new ObjectRetriever("GW152ysCQ2");
-//		Quote quote = objRetriever.load();
-//		tvQuote.setText(quote.getText());
-//		imgQuote.setImageBitmap(quote.getImage());
-		
-//		loadQuote("GW152ysCQ2");
-		
-		RandomQuote randomQ = new RandomQuote();
+		// Get random Quote from Cloud
+		RandomQuote randomQ = new RandomQuote(this);
 		randomQ.getRandomKey();
 		
 		uiHelper = new UiLifecycleHelper(this, null);
