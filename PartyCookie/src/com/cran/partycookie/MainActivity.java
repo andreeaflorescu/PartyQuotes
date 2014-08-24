@@ -160,9 +160,10 @@ public class MainActivity extends Activity implements View.OnClickListener{
 		if(v.getId() == R.id.fbSareButton){
 			if (FacebookDialog.canPresentShareDialog(getApplicationContext(), FacebookDialog.ShareDialogFeature.SHARE_DIALOG)) {
                 FacebookDialog shareDialog = new FacebookDialog.ShareDialogBuilder(this)
-                        .setName("Titolo")
-                        .setDescription("Hello from Neosperience Developer")
                         .setLink("https://developers.facebook.com/android")
+                        .setApplicationName("Party Cookie")
+                        .setDescription("Descriere")
+                        .setName("Name")
                         .build();
                 uiHelper.trackPendingDialogCall(shareDialog.present());
 

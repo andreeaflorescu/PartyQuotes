@@ -39,7 +39,7 @@
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
-            android:value="d95c51ca38cac84b4d0216b059613775" />
+            android:value="@string/facebookID"/>
 
         <service android:name="com.parse.PushService" />
 
